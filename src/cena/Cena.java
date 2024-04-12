@@ -6,321 +6,531 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
-
 import java.awt.Color;
 import java.awt.Font;
+import Textura.Textura;
 
 public class Cena implements GLEventListener {
+
+    // Variáveis globais
     private float xMin, xMax, yMin, yMax, zMin, zMax;
+    private GL2 gl;
     private GLU glu;
+    private GLUT glut;
+    float luzR = 0.2f, luzG = 0.2f, luzB = 0.2f;
+    private int Vidas = 5;
     private TextRenderer textRenderer;
+
+    //V ariáveis de Tela
+    private String screen = "TelaInicial";
+
+    // Variáveis de situações do jogo
+    private boolean isGameStarted = false;
+    private boolean isPlaying;
+    private boolean isGamePaused = false;
+    private boolean isStalledGame = false;
+    private boolean isLostGame = false;
+    private boolean isGameWon = false;
+
+    // Variáveis da bola
+    private float ballPositionX = 0;
+    private float ballPositionY = 0;
+    private float ballPositionZ = 0; // Adicionei a posição Z para consistência
+    private float ballX, ballY, ballZ;
+    private float ballSize;
+    private float ballVelocityX, ballVelocityY, ballVelocityZ;
+
+    // Variáveis do bastão
+    private float paddleX, paddleY, paddleZ;
+    private float paddleWidth, paddleHeight, paddleDepth;
     public float horizontal;
-    private float paddleX, paddleY, paddleZ; // Posição do bastão
-    private float paddleWidth, paddleHeight, paddleDepth; // Dimensões do bastão
-    private float ballX, ballY, ballZ; // Posição da bola
-    private float ballRadius; // Raio da bola
-    private float ballSpeedX, ballSpeedY, ballSpeedZ; // Velocidade da bola
-    private boolean isPlaying; // Indica se o jogo está em andamento
-    private int pontuacao; // Contador da pontuação
-    private int faseAtual; // Contador da fase atual do jogador
-    private int vidas; // Contador de vidas
-    private boolean isGameStarted = false; // Variável para controlar se o jogo foi iniciado
-    private boolean isGamePaused = false; // Variável para controlar se o jogo foi pausado
-    private boolean isGameInterrupted = false; // Variável para controlar se o jogo está interrompido (Stop/Game Ove)
-    private boolean isGameWon = false; // Variável para controlar se o jogo foi vencido
-    float angulo; // Indica Rotação ; ADICIONADO
-    float anguloMiniCubos; // Indica rotação dos mini cubos ; ADICIONADO
 
-    // Coordenadas dos mini cubos representando as vidas
+    // Variáveis de placar do jogo
+    private int Pontuação;
+    private int FaseAtual;
+
+    // Variáveis de rotação
+    public float angulo = 0;
+    private float incAngulo = 0;
+
+    //Variáveis dos Mini-Teroides
+    float anguloMiniTeroides;
     private float[][] lifeCoordinates = {
-            {-20, 78}, {-10, 78}, {0, 78}, {10, 78}, {20, 78}
-    };
+    {-20, 78}, {-10, 78}, {0, 78}, {10, 78}, {20, 78}};
 
+    //Variáveis do Teróides
+    private float teroidePositionX = 0;
+    private float teroidePositionY = 0;
+    private float teroideRadius = 10;
+    
+    // Variáveis de iluminação
+    public boolean liga = true;      
+    public int ponto = 0, modo = GL2.GL_FILL;
+    public int tonalização = GL2.GL_SMOOTH; 
+   
+    // Constantes para identificar as imagens
+    private float limite;
+    public static final String FACE1 = "Imagens/TheSimpsons.png";
+    public static final String FACE2 = "Imagens/Homer.png";
+    public static final String FACE3 = "Imagens/SimpsonsCréditos.jpg";
+    private int indice;
+    
+    // Atributos para trabalhar com textura
+    private int filtro = GL2.GL_LINEAR;
+    private int wrap = GL2.GL_REPEAT;
+
+    // Referência para classe Textura
+    private Textura textura = null;
+    
+    // Quantidade de Texturas a ser carregada
+    private int totalTextura = 1;
 
     @Override
     public void init(GLAutoDrawable drawable) {
-        // Dados iniciais da cena
-        glu = new GLU();
         GL2 gl = drawable.getGL().getGL2();
 
+        // Dados iniciais da cena
+        glu = new GLU();
 
         // Estabelece as coordenadas do SRU (Sistema de Referencia do Universo)
         xMin = yMin = zMin = -100;
         xMax = yMax = zMax = 100;
 
-        // Habilita o buffer de profundidade
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        angulo = 0; //Rotação
-        anguloMiniCubos = 0; // Indica o ângulo dos mini cubos para a rotação
+        //Texto
+        textRenderer = new TextRenderer(new Font("Arial", Font.BOLD, 30));
 
-        textRenderer = new TextRenderer(new Font("Arial", Font.BOLD, 18)); //Texto
+        // Implementação do jogo - Ângulo
+        angulo = 0;
+        anguloMiniTeroides = 0;
+        
+        // Implementação do jogo - Limite
+        limite = 1;
 
-        horizontal = 0; // Indica a posição horizontal do bastão
+        // Implementação do jogo - Andamento, placar, fase e vidas
+        isPlaying = true;
+        Pontuação = 0;
+        FaseAtual = 1;
+        Vidas = 5;
 
-        // Configurações iniciais do bastão
+        // Implementação do jogo - Bola
+        ballX = 40;
+        ballY = 0;
+        ballZ = 0; 
+        ballSize = 3;
+        ballVelocityX = (float) 1.7;
+        ballVelocityY = (float) -1.7;
+        ballVelocityZ = 0;
+
+        // Implementação do jogo - Bastão
         paddleY = -90;
         paddleZ = 0;
         paddleWidth = 35;
         paddleHeight = 5;
         paddleDepth = 5;
+        horizontal = 0;
 
-        // Configurações iniciais da bola
-        ballX = 40;
-        ballY = 0;
-        ballZ = 0;
-        ballRadius = 3;
-        ballSpeedX = (float) 1.7;
-        ballSpeedY = (float) -1.7;
-        ballSpeedZ = 0;
-        
-        //Configurações do Andamento; Pontuação e Fase Atual do jogo
-        isPlaying = true;
-        pontuacao = 0;
-        faseAtual = 1;
+        //Cria uma instancia da Classe Textura indicando a quantidade de texturas
+        textura = new Textura(totalTextura);
 
-        // Inicializa o contador de vidas
-        vidas = 5;
+        //habilita o buffer de profundidade
+        gl.glEnable(GL2.GL_DEPTH_TEST);
     }
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        // Obtem o contexto OpenGL
         GL2 gl = drawable.getGL().getGL2();
-        GLUT glut = new GLUT(); // Objeto para desenho 3D
+        GLUT glut = new GLUT();
 
-        // Define a cor da janela (R, G, B, alpha)
+        // Define a cor da janela (R, G, G, alpha)
         gl.glClearColor(0, 0, 0, 1);
+        
         // Limpa a janela com a cor especificada
+        // Limpa o buffer de profundidade
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-        gl.glLoadIdentity(); // Lê a matriz identidade
+        gl.glLoadIdentity();
 
-        // Se o jogo estiver pausado ou interrompido, não atualize a lógica do jogo
-        if (isGamePaused || isGameInterrupted || isGameWon) {
-            // Desenhe uma mensagem correspondente
-            String mensagem = isGamePaused ? "Jogo Pausado" : (isGameWon ? "Jogo Vencedor" : "Game Over");
-            Color cor = isGamePaused ? Color.WHITE : (isGameWon ? Color.GREEN : Color.RED);
-            desenhaTexto(gl, 240, 300, cor, mensagem);
+        // Comando condicional para desenhar Telas do jogo
+        if (screen.equals("TelaInicial")) {
+            desenhaTelaInicial(gl);
+            
+        } else if (screen.equals("Instruções")) {
+            desenhaTelaPropósitoRegras(gl);
+            
+        } else if (screen.equals("Créditos")) {
+            desenhaTelaCréditos(gl);
+            
+        } else if (screen.equals("Jogo Pong")) {
+            desenhaJogoPong(gl, glut);
+        }
+
+        gl.glFlush();
+    }
+
+        // Desenhando e implementando a Tela Inicial
+        private void desenhaTelaInicial(GL2 gl) {
+        desenhaTexto(gl, 470, Renderer.screenHeight - 80, Color.yellow, "PONG SIMPSONS GAME!");
+        desenhaTexto(gl, 415, Renderer.screenHeight - 330, Color.green, "1. Pressione (ESPAÇO) para iniciar.");
+        desenhaTexto(gl, 415, Renderer.screenHeight - 430, new Color(0.145f, 0.588f, 0.745f), "2. Pressione (I) para propósito e regras do jogo.");
+        desenhaTexto(gl, 415, Renderer.screenHeight - 530, new Color (0.9255f, 0.3451f, 0.6157f),"3. Pressione (C) para créditos.");
+        desenhaTexto(gl, 415, Renderer.screenHeight - 630, Color.red, "4. Pressione (ESC) para sair.");
+        // Métodos para textura
+        // Habilita a transparencia
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+      
+        // Não é geração de textura automática
+        textura.setAutomatica(false);
+                
+        // Configura os filtros
+        textura.setFiltro(filtro);
+        textura.setModo(GL2.GL_MODULATE);
+        textura.setWrap(wrap);  
+         
+        // Desenha um cubo no qual a textura eh aplicada
+        //não é geração de textura automática
+        textura.setAutomatica(false);
+
+        //configura os filtros
+        textura.setFiltro(filtro);
+        textura.setModo(modo);
+        textura.setWrap(wrap);  
+
+        //cria a textura indicando o local da imagem e o índice
+        textura.gerarTextura(gl, FACE1, 0);
+             
+        // Criando objeto com a imagem na posição selecionada
+        gl.glColor3f(1.0f, 1.0f, 1.0f);
+        gl.glPushMatrix();
+            gl.glScalef(3f,2f,2f);
+            gl.glTranslatef(1, 25, 0);
+            gl.glBegin(GL2.GL_QUADS);                
+            	gl.glTexCoord2f(0.0f, limite);   gl.glVertex2f(-20.0f, 8.0f); 
+                gl.glTexCoord2f(limite, limite); gl.glVertex2f(20.0f, 8.0f); 
+                gl.glTexCoord2f(limite, 0.0f);   gl.glVertex2f(20.0f, -10.0f);
+                gl.glTexCoord2f(0.0f, 0.0f);     gl.glVertex2f(-20.0f, -10.0f);                            
+            gl.glEnd();
+    
+        
+      //desabilita a textura indicando o índice
+      textura.desabilitarTextura(gl, 0);
+    }
+
+        
+    
+    // Desenhando e implementando a Tela de Instruções
+    private void desenhaTelaPropósitoRegras(GL2 gl) {
+        desenhaTexto(gl, 490, Renderer.screenHeight - 60, Color.yellow, "PROPÓSITO E REGRAS:");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 260, Color.white, "1. O Propósito do jogo é rebater a bola com seu bastão e marcar pontos sem fazer -");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 330, Color.white, "- com que a bola ultrapasse o bastão e caia pelo fundo da tela.");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 400, Color.white, "2. Utilize as setas do teclado para mover a barra para (ESQUERDA) ou (DIREITA).");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 470, Color.white, "3. Pressione a tecla (S) para começar o jogo.");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 540, Color.white, "4. Pressione a tecla (P) para pausar o jogo.");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 610, Color.white, "5. Pressione a tecla (Q) para parar/stop o jogo.");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 680, Color.white, "6. Pressionea tecla (ESC) para sair do jogo.");
+        
+        // Métodos para textura
+        // Habilita a transparencia
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+      
+        // Não é geração de textura automática
+        textura.setAutomatica(false);
+                
+        // Configura os filtros
+        textura.setFiltro(filtro);
+        textura.setModo(GL2.GL_MODULATE);
+        textura.setWrap(wrap);  
+        
+        // Desenha um cubo no qual a textura eh aplicada
+        //não é geração de textura automática
+        textura.setAutomatica(false);
+
+        //configura os filtros
+        textura.setFiltro(filtro);
+        textura.setModo(modo);
+        textura.setWrap(wrap);  
+
+        //cria a textura indicando o local da imagem e o índice
+        textura.gerarTextura(gl, FACE2, 0);
+             
+        // Criando objeto com a imagem na posição selecionada
+        gl.glColor3f(1.0f, 1.0f, 1.0f);
+        gl.glPushMatrix();
+            gl.glScalef(3f,2.1f,2f);
+            gl.glTranslatef(2, 30, 0);
+            gl.glBegin(GL2.GL_QUADS);                
+            	gl.glTexCoord2f(0.0f, limite);   gl.glVertex2f(-20.0f, 7.0f); 
+                gl.glTexCoord2f(limite, limite); gl.glVertex2f(20.0f, 7.0f); 
+                gl.glTexCoord2f(limite, 0.0f);   gl.glVertex2f(20.0f, -10.0f);
+                gl.glTexCoord2f(0.0f, 0.0f);     gl.glVertex2f(-20.0f, -10.0f);                            
+            gl.glEnd();
+    
+        
+      //desabilita a textura indicando o índice
+      textura.desabilitarTextura(gl, 0);
+       
+    }
+
+    // Desenhando e implementando a Tela de Instruções
+    private void desenhaTelaCréditos(GL2 gl) {
+        desenhaTexto(gl, 590, Renderer.screenHeight - 50, Color.yellow, "Créditos:");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 260, Color.white, "* UC: Computação Gráfica e Realidade Virtual");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 330, Color.white, "* Componentes / RA:");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 400, Color.white, "1. Carlos Felipe Borges Mesquita / 12522138056");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 470, Color.white, "2. Gabriel Luz Carbonaro / 12524120447");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 540, Color.white, "3. Guilherme Rechinguel da Silva / 12522159171");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 610, Color.white, "4. Jackson da Costa Souza / 125221102685");
+        desenhaTexto(gl, 40, Renderer.screenHeight - 680, Color.white, "5. Pedro Henrique Machado / 12522192958");
+        
+        // Métodos para textura
+        // Habilita a transparencia
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+      
+        // Não é geração de textura automática
+        textura.setAutomatica(false);
+                
+        // Configura os filtros
+        textura.setFiltro(filtro);
+        textura.setModo(GL2.GL_MODULATE);
+        textura.setWrap(wrap);  
+        
+        // Desenha um cubo no qual a textura eh aplicada
+        //não é geração de textura automática
+        textura.setAutomatica(false);
+
+        // Configura os filtros
+        textura.setFiltro(filtro);
+        textura.setModo(modo);
+        textura.setWrap(wrap);  
+
+        // Cria a textura indicando o local da imagem e o índice
+        textura.gerarTextura(gl, FACE3, 0);
+             
+        // Criando objeto com a imagem na posição selecionada
+        gl.glColor3f(1.0f, 1.0f, 1.0f);
+        gl.glPushMatrix();
+            gl.glScalef(3f,2f,2f);
+            gl.glTranslatef(2, 33, 0);
+            gl.glBegin(GL2.GL_QUADS);                
+            	gl.glTexCoord2f(0.0f, limite);   gl.glVertex2f(-20.0f, 7.0f); 
+                gl.glTexCoord2f(limite, limite); gl.glVertex2f(20.0f, 7.0f); 
+                gl.glTexCoord2f(limite, 0.0f);   gl.glVertex2f(20.0f, -10.0f);
+                gl.glTexCoord2f(0.0f, 0.0f);     gl.glVertex2f(-20.0f, -10.0f);                            
+            gl.glEnd();
+    
+        
+      //Desabilita a textura indicando o índice
+      textura.desabilitarTextura(gl, 0);
+       
+    }
+    // Desenhando e implementando a Tela do Jogo Pong
+    private void desenhaJogoPong(GL2 gl, GLUT glut) {
+        desenhaTexto(gl, 490, 680, Color.yellow, "Pong Simpsons Game");
+        desenhaTexto(gl, 10, 680, Color.yellow, "Pontuação: " + Pontuação);
+        desenhaTexto(gl, 10, 630, Color.yellow, "Fase: " + FaseAtual);
+        desenhaTexto(gl, 1150, 680, Color.yellow, "Vidas: " + Vidas);
+
+        // Comando Condicional para mostrar mensagem na tela das seguintes situações
+        if (isGamePaused || isStalledGame || isLostGame || isGameWon) {
+            String mensagem = isGamePaused ? "Jogo Pausado" : isStalledGame ? "Jogo Parado" : (isGameWon ? "Jogo Vencedor" : "Game Over");
+            Color cor = isGamePaused ? Color.yellow : isStalledGame ? Color.yellow : (isGameWon ? Color.GREEN : Color.RED);
+            desenhaTexto(gl, 550, 370, cor, mensagem);
             gl.glFlush();
             return;
         }
 
-        // Incrementa o ângulo dos mini cubos
-        anguloMiniCubos++;
+        //Desenhando a bola
+        gl.glPushMatrix();
+        gl.glColor3f(1, 1, 0); // Cor Vermelho
+        gl.glTranslatef(ballX, ballY, ballZ);
+        glut.glutSolidSphere(ballSize, 50, 50);
+        gl.glPopMatrix();
 
-        // Desenhar e exibir os mini cubos representando as vidas
-        gl.glColor3f(1, 0, 0); // Define a cor vermelha para os mini cubos
-        for (int i = 0; i < vidas; i++) {
+        // Desenhando o bastão
+        gl.glPushMatrix();
+        gl.glTranslatef(paddleX, paddleY, paddleZ);
+        gl.glScalef(paddleWidth, paddleHeight, paddleDepth);
+        gl.glColor3f(1, 1, 0); // Cor Amarelo
+        glut.glutSolidCube(1);
+        gl.glPopMatrix();
+        
+        // Desenhando Mini-Teroides para representar as vidas
+        gl.glColor3f(1, 1, 0);
+        for (int i = 0; i < Vidas; i++) {
             gl.glPushMatrix();
             gl.glTranslatef(lifeCoordinates[i][0], lifeCoordinates[i][1], 0);
-            gl.glRotatef(anguloMiniCubos, 0, 1, 0); // Rotaciona ao redor do eixo Y
-            glut.glutWireCube(5);
+            gl.glRotatef(anguloMiniTeroides, 0, 1, 0);
+            gl.glColor3f(0.9255f, 0.3451f, 0.6157f); // Cor Rosa claro
+            glut.glutSolidTorus(2, 3, 3, 8);
             gl.glPopMatrix();
             gl.glFlush();
         }
 
-        // Desenhar e exibir a bola
-        gl.glPushMatrix();
-        gl.glColor3f(1, 1, 1); // Define a cor branca para a bola
-        gl.glTranslatef(ballX, ballY, ballZ);
-        glut.glutSolidSphere(ballRadius, 50, 50);
-        gl.glPopMatrix();
+        // Rotação dos Mini-Teroides
+        anguloMiniTeroides++;
 
-        //Desenhar e exibir texto Pong Game
-        desenhaTexto(gl, 250, 570, Color.BLUE, "Pong Game");
-
-        // Desenhar e exibir potuação em tempo real
-        desenhaTexto(gl, 10, 570, Color.BLUE, "Pontuação: " + pontuacao);
-
-        // Desenhar e exibir a fase atual
-        desenhaTexto(gl, 10, 530, Color.BLUE, "Fase: " + faseAtual);
-
-        // Desenhar e exibir o contador de vidas
-        desenhaTexto(gl, 515, 570, Color.RED, "Vidas: " + vidas);
-
-        // Desenhar e exibir o bastão
-        gl.glPushMatrix();
-        gl.glTranslatef(paddleX, paddleY, paddleZ);
-        gl.glScalef(paddleWidth, paddleHeight, paddleDepth);
-        gl.glColor3f(1, 1, 1); // Cor branca
-        glut.glutSolidCube(1);
-        gl.glPopMatrix();
-
-
-        // Verifica se o jogo foi iniciado
         if (!isGameStarted) {
-            // Desenha a bola no centro da tela
             ballX = 0;
             ballY = 0;
             gl.glPushMatrix();
             gl.glTranslatef(ballX, ballY, ballZ);
-            glut.glutSolidSphere(ballRadius, 50, 50);
+            glut.glutSolidSphere(ballSize, 50, 50);
             gl.glPopMatrix();
-            
         } else {
-            // Atualiza a posição do bastão com base na variável horizontal,
-            // garantindo que ele não ultrapasse os limites da janela
             paddleX = Math.max(Math.min(horizontal, xMax - paddleWidth / 2), xMin + paddleWidth / 2);
+            ballX += ballVelocityX;
+            ballY += ballVelocityY;
 
-            // Atualiza a posição da bola
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
-
-            // Verifica as colisões com as extremidades da janela
-            if (ballX + ballRadius >= xMax || ballX - ballRadius <= xMin) {
-                // Inverte a direção horizontal da bola
-                ballSpeedX *= -1;
-            }
-            if (ballY + ballRadius >= yMax || ballY - ballRadius <= yMin) {
-                // Inverte a direção vertical da bola e a faz quicar
-                ballSpeedY *= -1;
+            if (ballX + ballSize >= xMax || ballX - ballSize <= xMin) {
+                ballVelocityX *= -1;
             }
 
-            // Verifica colisão com o bastão
-            if (ballY - ballRadius <= paddleY + paddleHeight / 2 && ballY - ballRadius >= paddleY - paddleHeight / 2 &&
+            if (ballY + ballSize >= yMax || ballY - ballSize <= yMin) {
+                ballVelocityY *= -1;
+            }
+
+            if (ballY - ballSize <= paddleY + paddleHeight / 2 && ballY - ballSize >= paddleY - paddleHeight / 2 &&
                     ballX >= paddleX - paddleWidth / 2 && ballX <= paddleX + paddleWidth / 2) {
-                // Rebateu na bola, incrementa a pontuação
-                pontuacao++;
-                // Faz a bola quicar ao colidir com o bastão
-                ballSpeedY *= -1;
-                
-            } else if (ballY - ballRadius < yMin) {
-                // Se a bola passar pelo bastão sem ser rebatida, perde uma vida
-                vidas--;
-                // Reinicia a posição da bola
+                Pontuação++;
+                ballVelocityY *= -1;
+            } else if (ballY - ballSize < yMin) {
+                Vidas--;
                 ballX = 0;
                 ballY = 0;
-                // Reinicia a velocidade da bola
-                ballSpeedX = (float) 1.7;
-                ballSpeedY = (float) -1.7;
+                ballVelocityX = (float) 1.7;
+                ballVelocityY = (float) -1.7;
             }
-            
-            // Verifica se é a Fase 2 e desenha um cubo no centro da tela
-        if (faseAtual == 2) {
-            gl.glPushMatrix();
-            gl.glTranslatef(0, 0, 0); // Centro da tela
-            gl.glColor3f(1, 1, 1); // Cor branca para o cubo
-            glut.glutWireCube(40); // Cubo de tamanho 10
-            gl.glPopMatrix();
-        }
-        
-            // Verifica se a fase atual é a primeira
-            if (faseAtual == 1) {
-                // Verifica se a pontuação alcançou o limite para avançar para a próxima fase
-                if (pontuacao >= 10) {
-                    // Define a próxima fase e reinicia as variáveis necessárias
-                    faseAtual = 2;
+
+            if (FaseAtual == 1) {
+                if (Pontuação >= 10) {
+                    FaseAtual = 2;
                     reiniciarFase();
                 }
-                
-            } else if (faseAtual == 2) {
-                // Verifica se a pontuação alcançou o limite para vencer a segunda fase
-                if (pontuacao >= 10) {
-                    // Exibe a mensagem de vencedor
+
+            } else if (FaseAtual == 2) {
+                if (Pontuação >= 10) {
                     desenhaTexto(gl, 250, 300, Color.GREEN, "Jogo Vencido");
-                    // Interrompe o jogo
                     isGameWon = true;
-                    // Retorna para evitar que o restante do código da cena seja executado
                     gl.glFlush();
                     return;
                 }
             }
         }
 
-        // Verifica se todas as vidas foram perdidas
-        if (vidas <= 0) {
-            // Todas as vidas foram perdidas, exibe "Game Over" e interromper o jogo
+        if (Vidas <= 0) {
             desenhaTexto(gl, 250, 300, Color.RED, "Game Over");
-            isGameInterrupted = true;
+            isLostGame = true;
             return;
         }
 
+        //Desenhando um teroide apenas na fase 2
+        if(GetFase() == 2){
+        gl.glPushMatrix();
+        gl.glTranslatef(0, 0, 0); // Posição do objeto teroide
+        gl.glRotatef(angulo, 0.0f, 1.0f, 1.0f);
+        gl.glColor3f(0.9255f, 0.3451f, 0.6157f); // Cor Rosa claro
+        glut.glutSolidTorus(8, 20, 8, 15); // Desenha o objeto teroide
+        gl.glPopMatrix();
+        
         gl.glFlush();
     }
-
-    // Método para reiniciar as variáveis da fase
-    public void reiniciarFase() {
-        // Reinicia a posição da bola
+    
+    }
+    
+    // Comando condicional para atualizar velocidade da bola e pontuação na troca de fase
+    private void reiniciarFase() {
         ballX = 0;
-        ballY = 0;
+        ballY =40;
 
-        // Reinicia a velocidade da bola
-        if (faseAtual == 1) {
-            // Velocidade padrão da fase 1
-            ballSpeedX = 1.7f;
-            ballSpeedY = -1.7f;
-        } else if (faseAtual == 2) {
-            // Aumenta a velocidade da bola e o grau de dificuldade para a fase 2
-            ballSpeedX = 2.0f; // Ajuste conforme necessário
-            ballSpeedY = -2.0f; // Ajuste conforme necessário
-            // Reinicia a pontuação ao entrar na Fase 2
-            pontuacao = 0;
+        if (FaseAtual == 1) {
+            ballVelocityX = 1.7f;
+            ballVelocityY = -1.7f;
+        } else if (FaseAtual == 2) {
+            ballVelocityX = 2.0f;
+            ballVelocityY = -2.0f;
+            Pontuação = 0;
         }
-
-        // Reinicia outras variáveis conforme necessário
     }
 
-    // Método para iniciar o jogo
+    // Métodos do jogo
+    public void MostrarPropósitoRegras() {
+        SetScreen("Instruções");
+    }
+    
+    public void MostrarCréditos() {
+        SetScreen("Créditos");
+    }
+    
     public void IniciarJogo() {
         isGameStarted = true;
     }
 
-    // Método para pausar o jogo
     public void PausarJogo() {
         alternarPausa();
     }
 
-    // Método para pausar ou retomar o jogo
     public void alternarPausa() {
         isGamePaused = !isGamePaused;
     }
 
-    // Método para Parar/Interromper o jogo
-    public void PararJogo() {
-        isGameInterrupted = !isGameInterrupted;
+    public void JogoParado() {
+        isStalledGame = ! isStalledGame;
     }
 
-    // Método para Parar/Interromper o jogo
+    public void JogoPerdido() {
+        isLostGame = !isLostGame;
+    }
+
     public void JogoVencedor() {
         isGameWon = !isGameWon;
     }
 
+    public int GetFase(){
+        return FaseAtual;
+    }
+
+    public String GetScreen() {
+        return screen;
+    }
+
+    public void SetScreen(String screen) {
+        this.screen = screen;
+    }
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        // Obtem o contexto gráfico OpenGL
+        
+       // Obtenha o contexto gráfico OpenGL
         GL2 gl = drawable.getGL().getGL2();
-
-        // Evita a divisão por zero
+        
+        // Evite a divisão por zero
         if (height == 0) height = 1;
+        
         // Calcula a proporção da janela (aspect ratio) da nova janela
         float aspect = (float) width / height;
-
-        // Seta o viewport para abranger a janela inteira
+        
         gl.glViewport(0, 0, width, height);
-
-        // Ativa a matriz de projeção
         gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity(); // Lê a matriz identidade
-
-        // Projeção ortogonal
+        gl.glLoadIdentity();
         if (width >= height)
             gl.glOrtho(xMin * aspect, xMax * aspect, yMin, yMax, zMin, zMax);
         else
             gl.glOrtho(xMin, xMax, yMin / aspect, yMax / aspect, zMin, zMax);
-
-        // Ativa a matriz de modelagem
         gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadIdentity(); // Lê a matriz identidade
-        System.out.println("Reshape: " + width + ", " + height);
+        gl.glLoadIdentity();
     }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
+        
     }
 
+    public void update() {
+    }
+    
     public void desenhaTexto(GL2 gl, int xPosicao, int yPosicao, Color cor, String frase) {
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-        // Retorna a largura e altura da janela
         textRenderer.beginRendering(Renderer.screenWidth, Renderer.screenHeight);
         textRenderer.setColor(cor);
         textRenderer.draw(frase, xPosicao, yPosicao);
