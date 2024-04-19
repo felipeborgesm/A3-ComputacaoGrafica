@@ -1,5 +1,4 @@
-package cena;
-import input.KeyBoard;
+package pong.cena;
 
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
@@ -7,18 +6,14 @@ import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.FPSAnimator;
+import pong.input.KeyBoard;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-/**
- *
- * @author Kakugawa
- */
-
 public class Renderer {
     private static GLWindow window = null;
-    public static int screenWidth = 0;  //1280
-    public static int screenHeight = 0; //960
+    public static int screenWidth = 1280;  
+    public static int screenHeight = 960; 
 
     // Cria a janela de renderização do JOGL
     public static void init() {
