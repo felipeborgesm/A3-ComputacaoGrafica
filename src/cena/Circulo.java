@@ -1,4 +1,4 @@
-package pong.cena;
+package cena;
 
 import com.jogamp.opengl.GL2;
 

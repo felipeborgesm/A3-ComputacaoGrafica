@@ -1,4 +1,4 @@
-package pong.textura;
+package textura;
 
 import com.jogamp.opengl.GL2;
 import java.io.File;
