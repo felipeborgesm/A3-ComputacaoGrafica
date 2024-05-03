@@ -6,19 +6,19 @@ public class Circulo {
     private double rX;
     private double rY;
 
-    public double getrX() {
+    public double ObterrX() {
         return rX;
     }
 
-    public void setrX(double rX) {
+    public void DefinirrX(double rX) {
         this.rX = rX;
     }
 
-    public double getrY() {
+    public double ObterrY() {
         return rY;
     }
 
-    public void setrY(double rY) {
+    public void DefinirrY(double rY) {
         this.rY = rY;
     }
     
@@ -32,7 +32,7 @@ public class Circulo {
         this.rY = rY;
     }
     
-    public void draw(GL2 gl){
+    public void Desenhar01(GL2 gl){
         //para 1/2 circulo: Math.PI
         double limite = 2*Math.PI;
         double i, cX = 0, cY = 0;
@@ -46,7 +46,7 @@ public class Circulo {
     }
 
     // gera os círculos posicionados de acordo com a sua quantidade
-    public void draw2(GL2 gl, double cX, double cY){
+    public void Desenhar02(GL2 gl, double cX, double cY){
         //para 1/2 circulo: Math.PI
         double limite = 2*Math.PI;
         double i;

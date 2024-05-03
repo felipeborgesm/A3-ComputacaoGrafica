@@ -24,6 +24,7 @@ public class KeyBoard implements KeyListener {
 
         switch (e.getKeyCode()) {
 
+            // Mover o bastao para a direita
             case right:
                 if (!JogoPausado) {
                     System.out.println("Direita no eixo X");
@@ -36,6 +37,7 @@ public class KeyBoard implements KeyListener {
                 }
                 break;
 
+            // Mover o bastao para a esquerda pressionando a tecla "RIGHT"
             case left:
                 if (!JogoPausado) {
                     System.out.println("Esquerda no eixo X");
@@ -48,37 +50,47 @@ public class KeyBoard implements KeyListener {
                 }
                 break;
 
+            // Pressionar a tecla "ESPACO" para a transição das seguintes telas
             case KeyEvent.VK_SPACE:
                 System.out.println("Espaco pressionado");
-                if (cena.ObterTela() == "TelaMenu" || cena.ObterTela() == "TelaPropósitoRegras"
-                        || cena.ObterTela() == "TelaCréditos") {
+                if (cena.ObterTela() == "TelaMenu" || cena.ObterTela() == "TelaPropositoRegras") {
+                    cena.DefinirTela("TelaJogo");
+                    break;
+                }
+                
+             case KeyEvent.VK_ENTER:
+                System.out.println("Enter pressionado");
+                if (cena.ObterTela() == "TelaGameOver" || cena.ObterTela() == "TelaJogoVencedor") {
                     cena.DefinirTela("TelaJogo");
                     break;
                 }
 
+            // pressionar a tecla "I" para exibir a tela Proposito e Regras 
             case KeyEvent.VK_I:
-                cena.MostrarTelaPropósitoRegras();
+                cena.MostrarTelaPropositoRegras();
                 break;
 
+            // pressionar a tecla "C" para exibir a tela Creditos
             case KeyEvent.VK_C:
-                cena.MostrarTelaCréditos();
+                cena.MostrarTelaCreditos();
                 break;
 
-            // Iniciar o jogo pressionando a tecla "S"
+            // Pressionar a tecla "S" para iniciar o jogo 
             case KeyEvent.VK_S:
                 cena.IniciarJogo();
                 break;
 
-            // Pausar o jogo pressioanndo a tecla "P"
+            // Pressionar a tecla "P" para pausar o jogo 
             case KeyEvent.VK_P:
                 cena.PausarJogo();
                 break;
 
+            // Pressionar a tecla "R" para reiniciar o jogo
             case KeyEvent.VK_R:
-                cena.ReiniciarJogo();
+                cena.ReiniciarOUPararJogo();
                 break;
 
-            // Sair do modo de execucao ao pressionar a tecla "ESC"
+            // Pressionar a tecla "ESC" para sair do modo de execucao do jogo
             case KeyEvent.VK_ESCAPE:
                 System.exit(0);
                 break;

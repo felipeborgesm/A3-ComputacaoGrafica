@@ -12,8 +12,8 @@ import java.awt.Toolkit;
 
 public class Renderer {
     private static GLWindow window = null;
-    public static int screenWidth = 1280;
-    public static int screenHeight = 960;
+    public static int screenWidth = 0;
+    public static int screenHeight = 0;
 
     // Cria a janela de renderizacao do JOGL
     public static void init() {

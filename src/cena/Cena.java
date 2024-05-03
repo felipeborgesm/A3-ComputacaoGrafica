@@ -3,18 +3,17 @@ package cena;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.Objects;
+
 import textura.Textura;
-import com.jogamp.opengl.util.gl2.GLUT;
 
 public class Cena implements GLEventListener {
 
     // Variáveis Gerais
     private float xMin, xMax, yMin, yMax, zMin, zMax;
-    private GLU glu;
     private int Vidas = 5; // Quantidade de vidas do jogador
     private TextRenderer textRenderer; // Implementar texto no SRU
 
@@ -30,9 +29,9 @@ public class Cena implements GLEventListener {
     private float BolaX, BolaY, BolaZ;
     private float PosicaoBolaX = 0;
     private float PosicaoBolaY = 0;
-    private float VelocidadeBolaX = 0.06f;
-    private float VelocidadeBolaY = 0.06f;
-    private final float TamanhoBola = 0.05f;
+    private float VelocidadeBolaX = 0.04f;
+    private float VelocidadeBolaY = 0.04f;
+    private final float TamanhoBola = 0.06f;
     public boolean MovimentoBola = false;
 
     // Variáveis de Situacoes do Jogo
@@ -46,10 +45,10 @@ public class Cena implements GLEventListener {
     private int Fase = 1;
 
     // Variáveis do Obstáculo da 2 Fase
-    private final float PosicaoObstáculoXMin = -0.4f;
-    private final float PosicaoObstáculoXMax = 0.65f;
-    private final float PosicaoObstáculoYMin = 0.3f;
-    private final float PosicaoObstáculoYMax = 1.1f;
+    private final float PosicaoObstaculoXMin = -0.55f;
+    private final float PosicaoObstaculoXMax = 0.65f;
+    private final float PosicaoObstaculoYMin = 0.3f;
+    private final float PosicaoObstaculoYMax = 1.1f;
 
     // Variáveis de Textura
     private Textura textura = null; // Referência para classe Textura
@@ -57,11 +56,11 @@ public class Cena implements GLEventListener {
 
     // Variáveis e Constantes para localizar as imagens
     public static final String TelaMenu = "Imagens/TheSimpsons.jpg";
-    public static final String TelaPropósitoRegras = "Imagens/BartSimpsons.jpg";
-    public static final String TelaCréditos = "Imagens/HomerSimpsons.jpg";
+    public static final String TelaPropositoRegras = "Imagens/BartSimpsons.jpg";
+    public static final String TelaCreditos = "Imagens/HomerSimpsons.jpg";
     public static final String TelaJogo = "Imagens/Inicio.jpg";
-    public static final String TelaJogoPerdedor = "Imagens/HomerJogoPerdedor.jpg";
-    public static final String TelaJogoVencedor = "Imagens/HomerJogoVencedor.jpg";
+    public static final String TelaGameOver = "Imagens/BartGameOver.jpg";
+    public static final String TelaJogoVencedor = "Imagens/HomerJogoVencedor.png";
     private int filtro = GL2.GL_LINEAR;
     private int wrap = GL2.GL_REPEAT;
     private int modo = GL2.GL_DECAL;
@@ -70,8 +69,6 @@ public class Cena implements GLEventListener {
     @Override
     public void init(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
-        // Dados iniciais da cena
-        glu = new GLU();
 
         // Estabelece as coordenadas do SRU (Sistema de Referencia do Universo)
         xMin = yMin = zMin = -1f;
@@ -86,8 +83,6 @@ public class Cena implements GLEventListener {
 
         gl.glEnable(GL2.GL_LIGHTING);
 
-        // PROFESSOR
-        gl.glEnable(GL2.GL_DEPTH_TEST);
     }
 
     @Override
@@ -96,12 +91,8 @@ public class Cena implements GLEventListener {
         GL2 gl = drawable.getGL().getGL2();
         ConfiguracaoDisplay(gl);
 
-        // PROFESSOR
-        GLUT glut = new GLUT();
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-
         // Criando e desenhando componentes na "telaMenu"
-        if (ObterTela() == "TelaMenu") {
+        if (Objects.equals(ObterTela(), "TelaMenu")) {
             // Implementacao de textura na "TelaMenu"
             textura.setAutomatica(false);
             textura.setFiltro(filtro);
@@ -125,25 +116,27 @@ public class Cena implements GLEventListener {
             textura.desabilitarTextura(gl, 0);
 
             // Textos da "TelaMenu"
-            desenhaTexto(gl, 120, cena.Renderer.screenHeight - 180, new Color(0.92f, 0.2f, 0.2f),
-                    "BEM-VINDO ao PONG SIMPSONS GAME!");
-            desenhaTexto(gl, 120, cena.Renderer.screenHeight - 280, new Color(0.0f, 0.47f, 0.34f),
-                    "1. Pressione (ESPAcO) para iniciar");
-            desenhaTexto(gl, 120, cena.Renderer.screenHeight - 380, new Color(0.145f, 0.588f, 0.745f),
-                    "2. Pressione (I) para propósito e regras do jogo");
-            desenhaTexto(gl, 120, cena.Renderer.screenHeight - 480, new Color(0.9255f, 0.3451f, 0.6157f),
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 160, new Color(0.92f, 0.2f, 0.2f),
+                    "BEM-VINDO AO PONG, THE SIMPSONS GAME!");
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 250, new Color(0.0f, 0.47f, 0.34f),
+                    "1. Pressione (ESPAÇO) para Iniciar.");
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 340, new Color(0.145f, 0.588f, 0.745f),
+                    "2. Pressione (I) para Propósito e Regras do jogo.");
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 430, new Color (1.0f, 0.4f, 0.0f),
                     "3. Pressione (C) para Créditos");
-            desenhaTexto(gl, 120, cena.Renderer.screenHeight - 580, Color.red, "4. Pressione (ESC) para sair");
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 520, new Color(0.9255f, 0.3451f, 0.6157f),
+                    "4. Pressione (ESC) para Sair.");
+
         }
 
         // Criando e desenhando componentes na "TelaPropósitoRegras"
-        if (ObterTela() == "TelaPropósitoRegras") {
+        if (Objects.equals(ObterTela(), "TelaPropositoRegras")) {
             // Implementacao de textura na "TelaPropósitoRegras"
             textura.setAutomatica(false);
             textura.setFiltro(filtro);
             textura.setModo(modo);
             textura.setWrap(wrap);
-            textura.gerarTextura(gl, TelaPropósitoRegras, 0);
+            textura.gerarTextura(gl, TelaPropositoRegras, 0);
 
             gl.glBegin(GL2.GL_QUADS);
             gl.glColor3f(1, 1, 1);
@@ -159,34 +152,35 @@ public class Cena implements GLEventListener {
             textura.desabilitarTextura(gl, 0);
 
             // Textos da "TelaPropósitoRegras"
-            desenhaTexto(gl, 490, Renderer.screenHeight - 50, Color.yellow, "PROPÓSITO E REGRAS:");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 100, Color.white,
-                    "1. O Propósito do jogo é rebater a bola com seu bastao e marcar pontos sem -");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 170, Color.white,
-                    "- fazer com que a bola ultrapasse o bastao e caia pelo fundo da tela.");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 240, Color.white,
-                    "2. Utilize as setas do teclado para mover a barra para (ESQUERDA) ou (DIREITA).");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 310, Color.white,
-                    "3. Pressione a tecla (S) para comecar o jogo.");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 380, Color.white,
-                    "4. Pressione a tecla (P) para pausar o jogo.");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 450, Color.white,
-                    "5. Pressione a tecla (R) para reiniciar o jogo.");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 520, Color.white,
-                    "5. Pressione a tecla (V) para volar a Tela Menu.");
-            desenhaTexto(gl, 40, Renderer.screenHeight - 590, Color.white,
-                    "6. Pressionea tecla (ESC) para sair do jogo.");
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 50, Color.yellow,
+                    "PROPÓSITO E REGRAS:");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 120, Color.white,
+                    "1. O Propósito do jogo é rebater a bola com seu bastão e marcar pontos, afim de -");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 190, Color.white,
+                    "- não resultar com que a bola ultrapasse o bastão e caia pelo fundo da tela.");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 260, Color.white,
+                    "2. Utilize as setas do teclado para mover o bastão para (ESQUERDA) ou (DIREITA).");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 330, Color.white,
+                    "3. Pressione a tecla (ESPAÇO) para auxílio das regras do jogo durante a execução.");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 400, Color.white,
+                    "4. Pressione a tecla (S) para começar o jogo.");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 470, Color.white,
+                    "5. Pressione a tecla (P) para pausar o jogo.");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 540, Color.white,
+                    "6. Pressione a tecla (R) para reiniciar/parar o jogo.");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 610, Color.white,
+                    "7. Pressionea tecla (ESC) para sair do jogo.");
 
         }
 
         // Criando e desenhando componentes na "TelaCréditos"
-        if (ObterTela() == "TelaCréditos") {
+        if (Objects.equals(ObterTela(), "TelaCreditos")) {
             // Implementacao de textura na "TelaCréditos"
             textura.setAutomatica(false);
             textura.setFiltro(filtro);
             textura.setModo(modo);
             textura.setWrap(wrap);
-            textura.gerarTextura(gl, TelaCréditos, 0);
+            textura.gerarTextura(gl, TelaCreditos, 0);
 
             gl.glBegin(GL2.GL_QUADS);
             gl.glColor3f(1, 1, 1);
@@ -201,32 +195,34 @@ public class Cena implements GLEventListener {
             gl.glEnd();
             textura.desabilitarTextura(gl, 0);
 
-            // Textos da "TelaCréditos"
-            desenhaTexto(gl, 300, Renderer.screenHeight - 70, Color.yellow, "Créditos:");
-            desenhaTexto(gl, 8, Renderer.screenHeight - 120, new Color(0.92f, 0.2f, 0.2f),
-                    "* UC: Computacao Gráfica e Realidade Virtual");
-            desenhaTexto(gl, 8, Renderer.screenHeight - 190, new Color(0.92f, 0.2f, 0.2f), "* Componentes / RA:");
-            desenhaTexto(gl, 8, Renderer.screenHeight - 260, new Color(0.92f, 0.2f, 0.2f),
-                    "1. Carlos Felipe Borges  / 12522138056");
-            desenhaTexto(gl, 8, Renderer.screenHeight - 330, new Color(0.92f, 0.2f, 0.2f),
+            // Textos da "TelaCreditos"
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 70, Color.yellow,
+                    "CRÉDITOS:");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 140, new Color(0.92f, 0.2f, 0.2f),
+                    "* UC: Computação Gráfica e Realidade Virtual");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 210, new Color(0.92f, 0.2f, 0.2f),
+                    "* Membro / RA:");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 280, new Color(0.92f, 0.2f, 0.2f),
+                    "1. Carlos Felipe Borges Mesquita / 12522138056");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 350, new Color(0.92f, 0.2f, 0.2f),
                     "2. Gabriel Luz Carbonaro / 12524120447");
-            desenhaTexto(gl, 8, Renderer.screenHeight - 400, new Color(0.92f, 0.2f, 0.2f),
-                    "3. Guilherme Rechinguel da Silva / 12522159171");
-            desenhaTexto(gl, 8, Renderer.screenHeight - 470, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 420, new Color(0.92f, 0.2f, 0.2f),
+                    "3. Guilherme Rechiguel da Silva / 12522159171");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 490, new Color(0.92f, 0.2f, 0.2f),
                     "4. Jackson da Costa Souza / 125221102685");
-            desenhaTexto(gl, 8, Renderer.screenHeight - 540, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 560, new Color(0.92f, 0.2f, 0.2f),
                     "5. Pedro Henrique Machado / 12522192958");
 
         }
 
         // Criando e desenhando componentes na "TelaGameOver"
-        if (ObterTela() == "TelaGameOver") {
+        if (Objects.equals(ObterTela(), "TelaGameOver")) {
             // Implementacao de textura na "TelaGameOver"
             textura.setAutomatica(false);
             textura.setFiltro(filtro);
             textura.setModo(modo);
             textura.setWrap(wrap);
-            textura.gerarTextura(gl, TelaJogoPerdedor, 0);
+            textura.gerarTextura(gl, TelaGameOver, 0);
 
             gl.glBegin(GL2.GL_QUADS);
             gl.glColor3f(1, 1, 1);
@@ -242,13 +238,20 @@ public class Cena implements GLEventListener {
             textura.desabilitarTextura(gl, 0);
 
             // Textos da "TelaGameOver"
-            desenhaTexto(gl, 560, Renderer.screenHeight - 50, Color.red, "Game Over !!!");
-            desenhaTexto(gl, 400, Renderer.screenHeight - 90, new Color(0.145f, 0.588f, 0.745f),
-                    "1. Pressione (ESC) para sair do jogo");
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 40, Color.red,
+                    "Game Over !!!");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 100, Color.yellow,
+                    "Orientações");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 150, new Color(0.2f, 0.3569f, 0.8118f),
+                    "1. Pressione (R) para reiniciar o jogo");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 200, new Color(0.2f, 0.3569f, 0.8118f),
+                    "2. Pressione (Enter) para entrar no jogo");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 250, new Color(0.2f, 0.3569f, 0.8118f),
+                    "3. Pressione (ESC) para sair do jogo");
         }
 
         // Criando e desenhando componentes na "JogoVencedor"
-        if (ObterTela() == "TelaJogoVencedor") {
+        if (Objects.equals(ObterTela(), "TelaJogoVencedor")) {
             // Implementacao de textura na "TelaJogoVencedor"
             textura.setAutomatica(false);
             textura.setFiltro(filtro);
@@ -269,14 +272,20 @@ public class Cena implements GLEventListener {
             gl.glEnd();
             textura.desabilitarTextura(gl, 0);
 
-            // Textos da "TelaJogoVencedor"
-            desenhaTexto(gl, 500, (Renderer.screenHeight/2), Color.green, "JOGO VENCEDOR !!!");
-            desenhaTexto(gl, 400, (Renderer.screenHeight/2), new Color(0.145f, 0.588f, 0.745f),
-                    "1. Pressione (ESC) para sair do jogo");
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 40, Color.green,
+                    "Jogo Vencedor !!!");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 100, Color.yellow,
+                    "Orientações");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 150, new Color(0.2f, 0.3569f, 0.8118f),
+                    "1. Pressione (R) para reiniciar o jogo");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 200, new Color(0.2f, 0.3569f, 0.8118f),
+                    "2. Pressione (Enter) para entrar no jogo");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 250, new Color(0.2f, 0.3569f, 0.8118f),
+                    "3. Pressione (ESC) para sair do jogo");
         }
 
         // Criando e desenhando componentes na "telaJogo"
-        if (ObterTela() == "TelaJogo") {
+        if (Objects.equals(ObterTela(), "TelaJogo")) {
             // Implementacao de textura na "TelaJogo"
             textura.setAutomatica(false);
             textura.setFiltro(filtro);
@@ -338,41 +347,46 @@ public class Cena implements GLEventListener {
             }
 
             // Desenhando Componentes do Jogo na Tela
-            desenhaTexto(gl, (Renderer.screenWidth / 2), Renderer.screenHeight - 50, Color.yellow,
-                    "Pong Simpsons Game");
-            desenhaTexto(gl, 10, Renderer.screenHeight - 50, Color.yellow, "Pontuacao: " + Pontuacao);
-            desenhaTexto(gl, 10, Renderer.screenHeight - 100, Color.yellow, "Fase: " + Fase);
-            desenhaTexto(gl, Renderer.screenWidth - 130, Renderer.screenHeight - 50, Color.yellow, "Vidas: " + Vidas);
+            desenhaTextoCentralizado(gl,Renderer.screenHeight - 40, Color.yellow,
+                    "Pong The Simpsons Game");
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 40, Color.yellow,
+                    "Pontuação: " + Pontuacao);
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 80, Color.yellow,
+                    "Fase: " + Fase);
+            desenhaTextoDireita(gl,Renderer.screenHeight - 40, Color.yellow,
+                    "Vidas: " + Vidas);
 
-            // Inclusao de representacao das vidas por bolinhas
+            // Definindo a cor do Círculo
+            gl.glColor3f(1.0f, 1.0f, 0.0f); // Cor Amarello
+            
+            // Desenha Mini-Circulos representrando as 5 vidas
             if (ObterVidas() > 0) {
                 int i;
                 double cX = -0.2, cY = 1.60;
                 for (i = 0; i < ObterVidas(); i++) {
                     Circulo circulo = new Circulo(TamanhoBola);
-                    circulo.draw2(gl, cX, cY);
+                    circulo.Desenhar02(gl, cX, cY);
                     cX = cX + 0.1;
                     gl.glPopMatrix();
                 }
             }
 
+            // Definindo a cor do Círculo
+            gl.glColor3f(1.0f, 1.0f, 0.0f); // Cor Amarello
+            
+            // Posicao da Bola (Circulo)
             gl.glPushMatrix();
             gl.glTranslatef(PosicaoBolaX, PosicaoBolaY, 0);
 
-            // Desenha o círculo
-//            Circulo circulo = new Circulo(TamanhoBola);
-//            circulo.draw(gl);
-//            gl.glPopMatrix();
-
-            //PROFESSOR
-            //Desenhando a bola
-            gl.glPushMatrix();
-            gl.glColor3f(1, 1, 0); // Cor Vermelho
-            gl.glTranslatef(BolaX, BolaY, BolaZ);
-            glut.glutSolidSphere(TamanhoBola, 50, 50);
+            // Desenha o Círculo (Bola)
+            Circulo circulo = new Circulo(TamanhoBola);
+            circulo.Desenhar01(gl);
             gl.glPopMatrix();
 
-            // Desenhando o bastao
+            // Definindo a cor do Bastao
+            gl.glColor3f(1.0f, 1.0f, 0.0f); // Cor Amarello
+
+            // Desenhando o Bastao
             gl.glPushMatrix();
             gl.glTranslatef(BastaoX, -1.8f, 0);
             gl.glBegin(GL2.GL_QUADS);
@@ -389,13 +403,13 @@ public class Cena implements GLEventListener {
                 gl.glColor3f(1, 1, 1);
                 gl.glBegin(GL2.GL_QUADS);
                 gl.glTexCoord2f(0.0f, 0.0f);
-                gl.glVertex2f(PosicaoObstáculoXMin, PosicaoObstáculoYMin);
+                gl.glVertex2f(PosicaoObstaculoXMin, PosicaoObstaculoYMin);
                 gl.glTexCoord2f(limite, 0.0f);
-                gl.glVertex2f(PosicaoObstáculoXMax, PosicaoObstáculoYMin);
+                gl.glVertex2f(PosicaoObstaculoXMax, PosicaoObstaculoYMin);
                 gl.glTexCoord2f(limite, limite);
-                gl.glVertex2f(PosicaoObstáculoXMax, PosicaoObstáculoYMax);
+                gl.glVertex2f(PosicaoObstaculoXMax, PosicaoObstaculoYMax);
                 gl.glTexCoord2f(0.0f, limite);
-                gl.glVertex2f(PosicaoObstáculoXMin, PosicaoObstáculoYMax);
+                gl.glVertex2f(PosicaoObstaculoXMin, PosicaoObstaculoYMax);
                 gl.glEnd();
                 gl.glPopMatrix();
             }
@@ -461,10 +475,10 @@ public class Cena implements GLEventListener {
             // Verificacoes de colisao com o obstáculo
             // Verifica colisao com o lado esquerdo do obstáculo
             if (ObterFase() == 2 &&
-                    PosicaoBolaX - TamanhoBola <= PosicaoObstáculoXMin &&
-                    PosicaoBolaX + TamanhoBola >= PosicaoObstáculoXMin &&
-                    PosicaoBolaY + TamanhoBola >= PosicaoObstáculoYMin &&
-                    PosicaoBolaY - TamanhoBola <= PosicaoObstáculoYMax) {
+                    PosicaoBolaX - TamanhoBola <= PosicaoObstaculoXMin &&
+                    PosicaoBolaX + TamanhoBola >= PosicaoObstaculoXMin &&
+                    PosicaoBolaY + TamanhoBola >= PosicaoObstaculoYMin &&
+                    PosicaoBolaY - TamanhoBola <= PosicaoObstaculoYMax) {
 
                 // Inverte a direcao da bola no eixo X
                 VelocidadeBolaX *= -1;
@@ -472,10 +486,10 @@ public class Cena implements GLEventListener {
 
             // Verifica colisao com o lado direito do obstáculo
             if (ObterFase() == 2 &&
-                    PosicaoBolaX + TamanhoBola >= PosicaoObstáculoXMax &&
-                    PosicaoBolaX - TamanhoBola <= PosicaoObstáculoXMax &&
-                    PosicaoBolaY + TamanhoBola >= PosicaoObstáculoYMin &&
-                    PosicaoBolaY - TamanhoBola <= PosicaoObstáculoXMax) {
+                    PosicaoBolaX + TamanhoBola >= PosicaoObstaculoXMax &&
+                    PosicaoBolaX - TamanhoBola <= PosicaoObstaculoXMax &&
+                    PosicaoBolaY + TamanhoBola >= PosicaoObstaculoYMin &&
+                    PosicaoBolaY - TamanhoBola <= PosicaoObstaculoXMax) {
 
                 // Inverte a direcao da bola no eixo X
                 VelocidadeBolaX *= -1;
@@ -483,10 +497,10 @@ public class Cena implements GLEventListener {
 
             // Verifica colisao com a parte inferior do obstáculo
             if (ObterFase() == 2 &&
-                    PosicaoBolaY - TamanhoBola <= PosicaoObstáculoYMin &&
-                    PosicaoBolaY + TamanhoBola >= PosicaoObstáculoYMin &&
-                    PosicaoBolaX + TamanhoBola >= PosicaoObstáculoXMin &&
-                    PosicaoBolaX - TamanhoBola <= PosicaoObstáculoXMax) {
+                    PosicaoBolaY - TamanhoBola <= PosicaoObstaculoYMin &&
+                    PosicaoBolaY + TamanhoBola >= PosicaoObstaculoYMin &&
+                    PosicaoBolaX + TamanhoBola >= PosicaoObstaculoXMin &&
+                    PosicaoBolaX - TamanhoBola <= PosicaoObstaculoXMax) {
 
                 // Inverte a direcao da bola no eixo Y
                 VelocidadeBolaY *= -1;
@@ -494,10 +508,10 @@ public class Cena implements GLEventListener {
 
             // Verifica colisao com a parte superior do obstáculo
             if (ObterFase() == 2 &&
-                    PosicaoBolaY + TamanhoBola >= PosicaoObstáculoYMax &&
-                    PosicaoBolaY - TamanhoBola <= PosicaoObstáculoYMax &&
-                    PosicaoBolaX + TamanhoBola >= PosicaoObstáculoXMin &&
-                    PosicaoBolaX - TamanhoBola <= PosicaoObstáculoXMax) {
+                    PosicaoBolaY + TamanhoBola >= PosicaoObstaculoYMax &&
+                    PosicaoBolaY - TamanhoBola <= PosicaoObstaculoYMax &&
+                    PosicaoBolaX + TamanhoBola >= PosicaoObstaculoXMin &&
+                    PosicaoBolaX - TamanhoBola <= PosicaoObstaculoXMax) {
 
                 // Inverte a direcao da bola no eixo Y
                 VelocidadeBolaY *= -1;
@@ -521,24 +535,30 @@ public class Cena implements GLEventListener {
     }
 
     // Implementacoes para reiniciar o Jogo - (Pressionar tecla "R")
-    public void ReiniciarJogo() {
-        PosicaoBolaX = 0;
-        PosicaoBolaY = 0;
-        MovimentoBola = false; // Para o movimento da bola até que o espaco seja teclado
+    public void ReiniciarOUPararJogo() {
+        //Reposicionar a bola
+        PosicaoBolaX = 0; // Centralizar o bastao na tela
+        PosicaoBolaY = 0; // Posicionar o bastao na parte central da tela
+        MovimentoBola = false; // Parar o movimento da bola até que o espaco seja teclado
 
-        this.DefinirVidas(5);
-        this.DefinirPontuacao(0);
-        this.DefinirFase(1);
+        // Reposicionar o bastão 
+        BastaoX = 0; // Centralizar o bastao na tela
+        BastaoY = -1.9f; // Posicionar o bastao na parte inferior da tela
+        
+        // Reiniciar componentes do jogo
+        this.DefinirVidas(5); // Voltar com 5 vidas iniciais
+        this.DefinirPontuacao(0); // Voltar a Pontuacao 0
+        this.DefinirFase(1); // Voltar para a Fase 1
 
-        // Retorna a velocidade original
-        VelocidadeBolaX = 0.03f;
-        VelocidadeBolaY = 0.03f;
+        // Retorna a velocidade da Fase 1
+        VelocidadeBolaX = 0.04f;
+        VelocidadeBolaY = 0.04f;
     }
 
-    // Implementando iluminacao
+    // Implementando iluminacao no obstáculo (Quando houver aproximacao da bola
     public void IluminacaoAmbiente(GL2 gl, float ballPositionX, float ballPositionY) {
-        float luzAmbiente[] = { 1.0f, 1.0f, 0.0f, 0.5f }; // cor
-        float posicaoLuz[] = { ballPositionX, ballPositionY, 1.0f, 1.0f };
+        float[] luzAmbiente = { 0.2f, 0.3569f, 0.8118f, 0.5f }; // Cor Azul
+        float[] posicaoLuz = { ballPositionX, ballPositionY, 1.0f, 1.0f };
 
         // define parametros de luz de número 0 (zero)
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, luzAmbiente, 0);
@@ -560,12 +580,12 @@ public class Cena implements GLEventListener {
 
     // Métodos do Jogo
     // Métodos de Tela
-    public void MostrarTelaPropósitoRegras() {
-        DefinirTela("TelaPropósitoRegras");
+    public void MostrarTelaPropositoRegras() {
+        DefinirTela("TelaPropositoRegras");
     }
 
-    public void MostrarTelaCréditos() {
-        DefinirTela("TelaCréditos");
+    public void MostrarTelaCreditos() {
+        DefinirTela("TelaCreditos");
     }
 
     public String ObterTela() {
@@ -577,14 +597,11 @@ public class Cena implements GLEventListener {
     }
 
     // Métodos de Pontuacao
-    public int AdicionarPontuacao() {
-        return this.Pontuacao += 20;
+    public void AdicionarPontuacao() {
+        this.Pontuacao += 20;
     }
 
-    public int ObterPontuacao() {
-        return Pontuacao;
-
-    }
+    public int ObterPontuacao() { return Pontuacao; }
 
     public void DefinirPontuacao(int pontuacao) {
         this.Pontuacao = pontuacao;
@@ -600,10 +617,10 @@ public class Cena implements GLEventListener {
     }
 
     // Funcao para retirar as vidas do jogador
-    private int DiminuirVidas() {
+    private void DiminuirVidas() {
         this.DefinirVidas((this.ObterVidas() - 1));
 
-        return this.ObterVidas();
+        this.ObterVidas();
     }
 
     // Métodos de Fase
@@ -617,8 +634,8 @@ public class Cena implements GLEventListener {
 
     // Método de velocidade da bola
     public void AumentarVelocidadeFase2() {
-        VelocidadeBolaX *= 1.8f;
-        VelocidadeBolaY *= 1.8f;
+        VelocidadeBolaX *= 1.0f;
+        VelocidadeBolaY *= 1.0f;
         DefinirFase(2);
     }
 
@@ -678,10 +695,6 @@ public class Cena implements GLEventListener {
         // Obtenha o contexto gráfico OpenGL
         GL2 gl = drawable.getGL().getGL2();
 
-        // PROFESSOR
-        gl.glOrtho(-100, 100, -100, 100, -100, 100);
-
-
         // Evite a divisao por zero
         if (height == 0)
             height = 1;
@@ -715,12 +728,42 @@ public class Cena implements GLEventListener {
     public void dispose(GLAutoDrawable drawable) {
     }
 
+    public void desenhaTextoCentralizado(GL2 gl, int yPosicao, Color cor, String frase) {
+        // Calcule a largura do texto usando textRenderer
+        int textWidth = textRenderer.getBounds(frase).getBounds().width;
+
+        // Calcule a posição x centralizada
+        int xPosicao = (Renderer.screenWidth - textWidth) / 2;
+
+        // Chame desenhaTexto com a posição calculada
+        desenhaTexto(gl, xPosicao, yPosicao, cor, frase);
+    }
+
+    public void desenhaTextoEsquerda(GL2 gl, int yPosicao, Color cor, String frase) {
+        // Alinhe o texto à esquerda, começando com xPosicao = 0
+        int xPosicao = 0;
+
+        // Chame desenhaTexto com a posição calculada
+        desenhaTexto(gl, xPosicao, yPosicao, cor, frase);
+    }
+
+    public void desenhaTextoDireita(GL2 gl, int yPosicao, Color cor, String frase) {
+        // Calcule a largura do texto usando textRenderer
+        int textWidth = textRenderer.getBounds(frase).getBounds().width;
+
+        // Calcule a posição x para alinhar o texto à direita
+        int xPosicao = Renderer.screenWidth - textWidth;
+
+        // Chame desenhaTexto com a posição calculada
+        desenhaTexto(gl, xPosicao, yPosicao, cor, frase);
+    }
+
     // Mostrar texto na tela
     public void desenhaTexto(GL2 gl, int xPosicao, int yPosicao, Color cor, String frase) {
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
         // Retorna a largura e altura da janela
-        textRenderer.beginRendering(cena.Renderer.screenWidth, cena.Renderer.screenHeight);
+        textRenderer.beginRendering(Renderer.screenWidth, Renderer.screenHeight);
         textRenderer.setColor(cor);
         textRenderer.draw(frase, xPosicao, yPosicao);
         textRenderer.endRendering();
