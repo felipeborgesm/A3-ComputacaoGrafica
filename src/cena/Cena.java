@@ -118,13 +118,13 @@ public class Cena implements GLEventListener {
             // Textos da "TelaMenu"
             desenhaTextoCentralizado(gl,Renderer.screenHeight - 180, new Color(0.92f, 0.2f, 0.2f),
                     "BEM-VINDO AO PONG, THE SIMPSONS GAME!");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 280, 100, new Color(0.0f, 0.47f, 0.34f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 280, 120, new Color(0.0f, 0.47f, 0.34f),
                     "1. Pressione (ESPAÇO) para Iniciar.");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 370, 100, new Color(0.145f, 0.588f, 0.745f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 370, 120, new Color(0.145f, 0.588f, 0.745f),
                     "2. Pressione (I) para Propósito e Regras do jogo.");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 460, 100, new Color (1.0f, 0.4f, 0.0f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 460, 120, new Color (1.0f, 0.4f, 0.0f),
                     "3. Pressione (C) para Créditos");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 550, 100, new Color(0.9255f, 0.3451f, 0.6157f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 550, 120, new Color(0.9255f, 0.3451f, 0.6157f),
                     "4. Pressione (ESC) para Sair.");
 
         }
@@ -154,21 +154,21 @@ public class Cena implements GLEventListener {
             // Textos da "TelaPropósitoRegras"
             desenhaTextoCentralizado(gl,Renderer.screenHeight - 50, Color.yellow,
                     "PROPÓSITO E REGRAS:");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 120, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 120, 10, Color.white,
                     "1. O Propósito do jogo é rebater a bola com seu bastão e marcar pontos, afim de -");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 190, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 190, 10, Color.white,
                     "- não resultar com que a bola ultrapasse o bastão e caia pelo fundo da tela.");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 260, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 260, 10, Color.white,
                     "2. Utilize as setas do teclado para mover o bastão para (ESQUERDA) ou (DIREITA).");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 330, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 330, 10, Color.white,
                     "3. Pressione a tecla (ESPAÇO) para auxílio das regras do jogo durante a execução.");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 400, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 400, 10, Color.white,
                     "4. Pressione a tecla (S) para começar o jogo.");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 470, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 470, 10, Color.white,
                     "5. Pressione a tecla (P) para pausar o jogo.");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 540, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 540, 10, Color.white,
                     "6. Pressione a tecla (R) para reiniciar/parar o jogo.");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 610, 100, Color.white,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 610, 10, Color.white,
                     "7. Pressionea tecla (ESC) para sair do jogo.");
 
         }
@@ -198,19 +198,19 @@ public class Cena implements GLEventListener {
             // Textos da "TelaCreditos"
             desenhaTextoCentralizado(gl,Renderer.screenHeight - 70, Color.yellow,
                     "CRÉDITOS:");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 140, 100, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 140, 10, new Color(0.92f, 0.2f, 0.2f),
                     "* UC: Computação Gráfica e Realidade Virtual");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 210, 100, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 210, 10, new Color(0.92f, 0.2f, 0.2f),
                     "* Membro / RA:");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 280, 100, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 280, 10, new Color(0.92f, 0.2f, 0.2f),
                     "1. Carlos Felipe Borges Mesquita / 12522138056");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 350, 100, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 350, 10, new Color(0.92f, 0.2f, 0.2f),
                     "2. Gabriel Luz Carbonaro / 12524120447");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 420, 100, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 420, 10, new Color(0.92f, 0.2f, 0.2f),
                     "3. Guilherme Rechiguel da Silva / 12522159171");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 490, 100, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 490, 10, new Color(0.92f, 0.2f, 0.2f),
                     "4. Jackson da Costa Souza / 125221102685");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 560, 100, new Color(0.92f, 0.2f, 0.2f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 560, 10, new Color(0.92f, 0.2f, 0.2f),
                     "5. Pedro Henrique Machado / 12522192958");
 
         }
@@ -240,13 +240,13 @@ public class Cena implements GLEventListener {
             // Textos da "TelaGameOver"
             desenhaTextoCentralizado(gl,Renderer.screenHeight - 40, Color.red,
                     "Game Over !!!");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 100, 100, Color.yellow,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 100, 10, Color.yellow,
                     "Orientações");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 150, 100, new Color(0.2f, 0.3569f, 0.8118f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 150, 10, new Color(0.2f, 0.3569f, 0.8118f),
                     "1. Pressione (R) para reiniciar o jogo");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 200, 100, new Color(0.2f, 0.3569f, 0.8118f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 200, 10, new Color(0.2f, 0.3569f, 0.8118f),
                     "2. Pressione (Enter) para entrar no jogo");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 250, 100, new Color(0.2f, 0.3569f, 0.8118f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 250, 10, new Color(0.2f, 0.3569f, 0.8118f),
                     "3. Pressione (ESC) para sair do jogo");
         }
 
@@ -274,13 +274,13 @@ public class Cena implements GLEventListener {
 
             desenhaTextoCentralizado(gl,Renderer.screenHeight - 40, Color.green,
                     "Jogo Vencedor !!!");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 100, 100, Color.yellow,
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 100, 10, Color.yellow,
                     "Orientações");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 150, 100, new Color(0.2f, 0.3569f, 0.8118f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 150, 10, new Color(0.2f, 0.3569f, 0.8118f),
                     "1. Pressione (R) para reiniciar o jogo");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 200, 100, new Color(0.2f, 0.3569f, 0.8118f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 200, 10, new Color(0.2f, 0.3569f, 0.8118f),
                     "2. Pressione (Enter) para entrar no jogo");
-            desenhaTextoEsquerda(gl,Renderer.screenHeight - 250, 100, new Color(0.2f, 0.3569f, 0.8118f),
+            desenhaTextoEsquerda(gl,Renderer.screenHeight - 250, 10, new Color(0.2f, 0.3569f, 0.8118f),
                     "3. Pressione (ESC) para sair do jogo");
         }
 
